@@ -15,14 +15,6 @@
 
 // Declare our NeoPixel strip object:
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRBW + NEO_KHZ800);
-// Argument 1 = Number of pixels in NeoPixel strip
-// Argument 2 = Arduino pin number (most are valid)
-// Argument 3 = Pixel type flags, add together as needed:
-//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
-//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
-//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
-//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
-//   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 
 int high = 0;
 int prevHigh = 0;
@@ -65,6 +57,7 @@ void setup() {
   }
   strip.show();
   bool sync = false;
+  // =================================================================  syncing
   while (!sync) {
     delay(1);
     prevHigh = high;
@@ -92,7 +85,6 @@ void setup() {
       duty_y = 0;
       sync = true;
     }
-
   }
 }
 
@@ -122,26 +114,14 @@ void loop() {
       //      Serial.println("counting   Y");
       if (prevHigh > 10 && high > 10) duty_y++;
     } else {
-      counting = false;
+      counting = false; // -------------------------------------------  coordinating done
       Serial.print(duty_x);
       Serial.print(" ");
       Serial.println(duty_y);
-      //      Serial.print(" ");
-//      x = float(duty_x) / 200.0;
-//      y = float(duty_y) / 200.0;
-      //      Serial.print(x);
-      //      Serial.print(" ");
-      //      Serial.println(y);
-//      target_r = x * 255.0;
-//
-//      target_b = y * 255.0;
-//      target_g = 100.0 - target_b > 0 ? 100.0 - target_b : 0;
-      //      Serial.print(target_r);
-      //      Serial.print(" ");
-      //      Serial.println(target_b);
     }
   }
-  if (Serial.available() > 0) {
+  // =================================================================  RGB LED
+  if (Serial.available() > 0) { // -----------------------------------  receive led infor
     // read the incoming byte:
     rb = Serial.read();
     gb = Serial.read();
@@ -151,12 +131,4 @@ void loop() {
     strip.setPixelColor(i, rb, gb, bb);
   }
   strip.show();
-
-  //    r += (target_r - r) * 0.005;
-  //    g += (target_g - g) * 0.005;
-  //    b += (target_b - b) * 0.01;
-  //  for (int i = 0; i < strip.numPixels(); i++) { // For each pixel in strip...
-  //    strip.setPixelColor(i, int(r), int(g), int(b));
-  //  }
-  //  strip.show();
 }
